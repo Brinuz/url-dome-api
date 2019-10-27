@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
-	"url-at-minimal-api/internal/router"
+	"url-at-minimal-api/internal/adapters/router"
 )
 
 func main() {
