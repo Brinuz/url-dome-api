@@ -22,7 +22,17 @@ func (m Minifier) Handler(w http.ResponseWriter, r *http.Request) {
 		URL string `json:"URL"`
 	}
 
-	json.NewDecoder(r.Body).Decode(&requestBody)
+	if r.Header.Get("Content-Type") != "application/json" || r.Method != "POST" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&requestBody)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 
 	result := m.Minifier.Minify(requestBody.URL, 7)
 
