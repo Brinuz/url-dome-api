@@ -1,18 +1,23 @@
 package minifyurl
 
 import (
-	"url-at-minimal-api/internal/adapters/persistence"
 	"url-at-minimal-api/internal/adapters/randomizer"
+	"url-at-minimal-api/internal/adapters/repository"
 )
+
+type MinifyUrl interface {
+	Minify(url string, len int) string
+	Deminify(hash string) string
+}
 
 // Minifier is a feature used to shorten the given url
 type Minifier struct {
-	repository persistence.Repository
+	repository repository.Repository
 	randomizer randomizer.Randomizer
 }
 
-// CreateMinifer returns a valid instace of Minifier
-func CreateMinifer(rep persistence.Repository, rand randomizer.Randomizer) *Minifier {
+// New returns a valid instace of Minifier
+func New(rep repository.Repository, rand randomizer.Randomizer) *Minifier {
 	return &Minifier{
 		repository: rep,
 		randomizer: rand,
@@ -20,8 +25,13 @@ func CreateMinifer(rep persistence.Repository, rand randomizer.Randomizer) *Mini
 }
 
 // Minify minifies the given url to a known shorter version
-func (m *Minifier) Minify(url string, len int) string {
+func (m Minifier) Minify(url string, len int) string {
 	shorten := m.randomizer.RandomString(len)
 	m.repository.Save(url, shorten)
-	return "/" + shorten
+	return shorten
+}
+
+// Deminify returns the original minified url based on the hash
+func (m Minifier) Deminify(hash string) string {
+	return m.repository.Find(hash)
 }

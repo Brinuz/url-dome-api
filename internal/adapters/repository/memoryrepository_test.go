@@ -1,15 +1,15 @@
-package persistence_test
+package repository_test
 
 import (
 	"testing"
-	"url-at-minimal-api/internal/adapters/persistence"
+	"url-at-minimal-api/internal/adapters/repository"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestMemoryRepositorySaveAndFind(t *testing.T) {
 	// Given
-	repo := persistence.CreateRepository()
+	repo := repository.New()
 
 	repo.Save("https://www.google.com", "Vsdfb1")
 	repo.Save("https://www.microsoft.com", "MasFgr0")
@@ -27,7 +27,7 @@ func TestMemoryRepositorySaveAndFind(t *testing.T) {
 
 func TestMemoryRepositoryNonExisting(t *testing.T) {
 	// Given
-	repo := persistence.CreateRepository()
+	repo := repository.New()
 
 	repo.Save("https://www.google.com", "Vsdfb1")
 	repo.Save("https://www.microsoft.com", "MasFgr0")

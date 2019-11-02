@@ -10,32 +10,53 @@ import (
 func TestMinify(t *testing.T) {
 	// Given
 	mockRepo := &MockRepository{
-		SaveFn: func(url, hash string) {},
-	}
-	mockRandom := &MockRandomizer{
-		RandomStringFn: func(len int) string {
-			assert.Equal(t, 7, len)
-			return "AsdvReX"
+		SaveFn: func(url, hash string) {
+			assert.Equal(t, "https://www.google.com", url)
 		},
 	}
-	minifer := minifyurl.CreateMinifer(mockRepo, mockRandom)
+	mockRandom := &MockRandomizer{
+		RandomStringFn: func(length int) string {
+			assert.Equal(t, 7, length)
+			return "AsdvRe0"
+		},
+	}
+	minifer := minifyurl.New(mockRepo, mockRandom)
 
 	// When
 	minifiedUrl := minifer.Minify("https://www.google.com", 7)
 
 	// Then
-	assert.Equal(t, "/AsdvReX", minifiedUrl)
+	assert.Equal(t, "AsdvRe0", minifiedUrl)
 	assert.Equal(t, 1, mockRepo.SaveFnCount)
 }
 
+func TestDeminify(t *testing.T) {
+	// Given
+	mockRepo := &MockRepository{
+		FindFn: func(hash string) string {
+			assert.Equal(t, "Casd1cV", hash)
+			return "https://www.google.com"
+		},
+	}
+	mockRandom := &MockRandomizer{}
+	minifer := minifyurl.New(mockRepo, mockRandom)
+
+	// When
+	url := minifer.Deminify("Casd1cV")
+
+	// Then
+	assert.Equal(t, "https://www.google.com", url)
+	assert.Equal(t, 1, mockRepo.FindFnCount)
+}
+
 type MockRandomizer struct {
-	RandomStringFn      func(len int) string
+	RandomStringFn      func(length int) string
 	RandomStringFnCount int
 }
 
-func (m *MockRandomizer) RandomString(len int) string {
+func (m *MockRandomizer) RandomString(length int) string {
 	m.RandomStringFnCount++
-	return m.RandomStringFn(len)
+	return m.RandomStringFn(length)
 }
 
 type MockRepository struct {
@@ -51,5 +72,5 @@ func (mock *MockRepository) Save(url, hash string) {
 }
 func (mock *MockRepository) Find(hash string) string {
 	mock.FindFnCount++
-	return mock.Find(hash)
+	return mock.FindFn(hash)
 }
