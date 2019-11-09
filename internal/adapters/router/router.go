@@ -19,15 +19,13 @@ func New(m minify.Minify) *Router {
 	}
 }
 
-func healthCheck(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-}
-
 // Handler is the router main handler
 func (r Router) Handler() *chi.Mux {
 	mux := chi.NewRouter()
 
-	mux.Get("/health-check", healthCheck)
+	mux.Get("/health-check", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
 	mux.Post("/minify", r.minify.Handler)
 
 	return mux
