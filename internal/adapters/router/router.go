@@ -28,6 +28,7 @@ func (r Router) Handler() *chi.Mux {
 	mux := chi.NewRouter()
 
 	mux.Get("/health-check", healthCheck)
+	mux.Post("/minify", r.minify.Handler)
 
 	return mux
 }

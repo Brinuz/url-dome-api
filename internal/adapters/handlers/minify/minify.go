@@ -13,7 +13,14 @@ type Minify interface {
 
 // Minifier implments default Minifier
 type Minifier struct {
-	Minifier minifyurl.MinifyUrl
+	minifier minifyurl.MinifyUrl
+}
+
+// New returns a valid instace of Minifier
+func New(m minifyurl.MinifyUrl) *Minifier {
+	return &Minifier{
+		minifier: m,
+	}
 }
 
 // Handler retuns an handler to be used by routing
@@ -22,7 +29,7 @@ func (m Minifier) Handler(w http.ResponseWriter, r *http.Request) {
 		URL string `json:"URL"`
 	}
 
-	if r.Header.Get("Content-Type") != "application/json" || r.Method != "POST" {
+	if r.Header.Get("Content-Type") != "application/json" {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
@@ -34,7 +41,7 @@ func (m Minifier) Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result := m.Minifier.Minify(requestBody.URL, 7)
+	result := m.minifier.Minify(requestBody.URL, 7)
 
 	respJSON, _ := json.Marshal(struct{ URL string }{r.Host + "/" + result})
 

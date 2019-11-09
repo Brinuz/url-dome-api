@@ -20,7 +20,7 @@ func TestHandler(t *testing.T) {
 			return "AsdcBV1"
 		},
 	}
-	handler := minify.Minifier{Minifier: mockMinifyUrl}
+	handler := minify.New(mockMinifyUrl)
 	req := httptest.NewRequest("POST", "https://mini.fy/", strings.NewReader(`{"URL":"https://dummy.url"}`))
 	req.Header.Add("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
@@ -40,25 +40,9 @@ func TestHandler(t *testing.T) {
 func TestHandlerInvalidContent(t *testing.T) {
 	// Given
 	mockMinifyUrl := &MockMinifyUrl{}
-	handler := minify.Minifier{Minifier: mockMinifyUrl}
+	handler := minify.New(mockMinifyUrl)
 	req := httptest.NewRequest("POST", "/", strings.NewReader("{invalid_json}"))
 
-	rec := httptest.NewRecorder()
-
-	// When
-	http.HandlerFunc(handler.Handler).ServeHTTP(rec, req)
-
-	// Then
-	assert.Equal(t, http.StatusNotFound, rec.Code)
-	assert.Equal(t, 0, mockMinifyUrl.MinifyFnCount)
-}
-
-func TestHandlerInvalidMethod(t *testing.T) {
-	// Given
-	mockMinifyUrl := &MockMinifyUrl{}
-	handler := minify.Minifier{Minifier: mockMinifyUrl}
-	req := httptest.NewRequest("GET", "/", nil)
-	req.Header.Add("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 
 	// When
@@ -72,7 +56,7 @@ func TestHandlerInvalidMethod(t *testing.T) {
 func TestHandlerBadJSON(t *testing.T) {
 	// Given
 	mockMinifyUrl := &MockMinifyUrl{}
-	handler := minify.Minifier{Minifier: mockMinifyUrl}
+	handler := minify.New(mockMinifyUrl)
 	req := httptest.NewRequest("POST", "/", strings.NewReader(`1234`))
 	req.Header.Add("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
