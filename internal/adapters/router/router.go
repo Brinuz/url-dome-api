@@ -1,9 +1,22 @@
 package router
 
-import "net/http"
+import (
+	"net/http"
+	"url-at-minimal-api/internal/adapters/handlers/minify"
+
+	"github.com/go-chi/chi"
+)
 
 // Router structure
 type Router struct {
+	minify minify.Minify
+}
+
+// New New returns a valid instace of Router
+func New(m minify.Minify) *Router {
+	return &Router{
+		minify: m,
+	}
 }
 
 func healthCheck(w http.ResponseWriter, r *http.Request) {
@@ -11,10 +24,10 @@ func healthCheck(w http.ResponseWriter, r *http.Request) {
 }
 
 // Handler is the router main handler
-func (r Router) Handler() *http.ServeMux {
-	mux := http.NewServeMux()
+func (r Router) Handler() *chi.Mux {
+	mux := chi.NewRouter()
 
-	mux.HandleFunc("/health-check", healthCheck)
+	mux.Get("/health-check", healthCheck)
 
 	return mux
 }

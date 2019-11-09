@@ -41,7 +41,7 @@ func TestHandlerInvalidContent(t *testing.T) {
 	// Given
 	mockMinifyUrl := &MockMinifyUrl{}
 	handler := minify.Minifier{Minifier: mockMinifyUrl}
-	req := httptest.NewRequest("POST", "/", nil)
+	req := httptest.NewRequest("POST", "/", strings.NewReader("{invalid_json}"))
 
 	rec := httptest.NewRecorder()
 

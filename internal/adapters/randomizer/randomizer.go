@@ -17,11 +17,11 @@ type Randomizer interface {
 
 // Random implements default randomizer
 type Random struct {
-	clock clock.Clocker
+	clock clock.Clock
 }
 
 // New returns a valid instace of Random
-func New(c clock.Clocker) *Random {
+func New(c clock.Clock) *Random {
 	return &Random{clock: c}
 }
 

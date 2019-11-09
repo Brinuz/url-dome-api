@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"url-at-minimal-api/internal/adapters/handlers/minify"
 	"url-at-minimal-api/internal/adapters/router"
 
 	"github.com/stretchr/testify/assert"
@@ -11,7 +12,7 @@ import (
 
 func TestHealthCheck(t *testing.T) {
 	// Given
-	router := router.Router{}
+	router := router.New(minify.Minifier{})
 	ms := httptest.NewServer(router.Handler())
 	defer ms.Close()
 
