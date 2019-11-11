@@ -13,11 +13,11 @@ type Minify interface {
 
 // Minifier implments default Minifier
 type Minifier struct {
-	minifier minifyurl.MinifyUrl
+	minifier minifyurl.MinifyURL
 }
 
 // New returns a valid instace of Minifier
-func New(m minifyurl.MinifyUrl) *Minifier {
+func New(m minifyurl.MinifyURL) *Minifier {
 	return &Minifier{
 		minifier: m,
 	}

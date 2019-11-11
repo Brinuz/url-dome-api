@@ -6,13 +6,15 @@ import (
 	"testing"
 	"url-at-minimal-api/internal/adapters/router"
 
+	"github.com/go-chi/chi"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestHealthCheck(t *testing.T) {
 	// Given
 	mockMinifier := &MockMinify{}
-	router := router.New(mockMinifier)
+	mockRedirecter := &MockRedirect{}
+	router := router.New(mockMinifier, mockRedirecter)
 	ms := httptest.NewServer(router.Handler())
 	defer ms.Close()
 
@@ -29,7 +31,8 @@ func TestMinifier(t *testing.T) {
 	mockMinifier := &MockMinify{
 		HandlerFn: func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusCreated) },
 	}
-	router := router.New(mockMinifier)
+	mockRedirecter := &MockRedirect{}
+	router := router.New(mockMinifier, mockRedirecter)
 	ms := httptest.NewServer(router.Handler())
 	defer ms.Close()
 
@@ -41,12 +44,43 @@ func TestMinifier(t *testing.T) {
 	assert.Equal(t, http.StatusCreated, resp.StatusCode)
 }
 
+func TestRedirecter(t *testing.T) {
+	// Given
+	mockMinifier := &MockMinify{}
+	mockRedirecter := &MockRedirect{
+		HandlerFn: func(w http.ResponseWriter, r *http.Request) {
+			assert.Equal(t, chi.URLParam(r, "target"), "Bcdg1A")
+			w.WriteHeader(http.StatusOK)
+		},
+	}
+	router := router.New(mockMinifier, mockRedirecter)
+	ms := httptest.NewServer(router.Handler())
+	defer ms.Close()
+
+	// When
+	resp, err := http.Get(ms.URL + "/Bcdg1A")
+
+	// Then
+	assert.NoError(t, err)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+}
+
 type MockMinify struct {
 	HandlerFn      func(http.ResponseWriter, *http.Request)
 	HandlerFnCount int
 }
 
 func (m *MockMinify) Handler(w http.ResponseWriter, r *http.Request) {
+	m.HandlerFnCount++
+	m.HandlerFn(w, r)
+}
+
+type MockRedirect struct {
+	HandlerFn      func(http.ResponseWriter, *http.Request)
+	HandlerFnCount int
+}
+
+func (m *MockRedirect) Handler(w http.ResponseWriter, r *http.Request) {
 	m.HandlerFnCount++
 	m.HandlerFn(w, r)
 }

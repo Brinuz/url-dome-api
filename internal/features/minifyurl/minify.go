@@ -5,9 +5,9 @@ import (
 	"url-at-minimal-api/internal/adapters/repository"
 )
 
-type MinifyUrl interface {
+// MinifyURL interface
+type MinifyURL interface {
 	Minify(url string, len int) string
-	Deminify(hash string) string
 }
 
 // Minifier is a feature used to shorten the given url
@@ -29,9 +29,4 @@ func (m Minifier) Minify(url string, len int) string {
 	shorten := m.randomizer.RandomString(len)
 	m.repository.Save(url, shorten)
 	return shorten
-}
-
-// Deminify returns the original minified url based on the hash
-func (m Minifier) Deminify(hash string) string {
-	return m.repository.Find(hash)
 }

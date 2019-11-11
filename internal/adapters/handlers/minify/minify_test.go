@@ -70,18 +70,11 @@ func TestHandlerBadJSON(t *testing.T) {
 }
 
 type MockMinifyUrl struct {
-	MinifyFn        func(url string, len int) string
-	MinifyFnCount   int
-	DeminifyFn      func(hash string) string
-	DeminifyFnCount int
+	MinifyFn      func(url string, len int) string
+	MinifyFnCount int
 }
 
 func (m *MockMinifyUrl) Minify(url string, len int) string {
 	m.MinifyFnCount++
 	return m.MinifyFn(url, len)
-}
-
-func (m *MockMinifyUrl) Deminify(hash string) string {
-	m.DeminifyFnCount++
-	return m.DeminifyFn(hash)
 }

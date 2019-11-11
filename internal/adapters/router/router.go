@@ -3,19 +3,22 @@ package router
 import (
 	"net/http"
 	"url-at-minimal-api/internal/adapters/handlers/minify"
+	"url-at-minimal-api/internal/adapters/handlers/redirect"
 
 	"github.com/go-chi/chi"
 )
 
 // Router structure
 type Router struct {
-	minify minify.Minify
+	minify   minify.Minify
+	redirect redirect.Redirect
 }
 
 // New New returns a valid instace of Router
-func New(m minify.Minify) *Router {
+func New(m minify.Minify, r redirect.Redirect) *Router {
 	return &Router{
-		minify: m,
+		minify:   m,
+		redirect: r,
 	}
 }
 
@@ -27,6 +30,7 @@ func (r Router) Handler() *chi.Mux {
 		w.WriteHeader(http.StatusOK)
 	})
 	mux.Post("/minify", r.minify.Handler)
+	mux.Get("/{target}", r.redirect.Handler)
 
 	return mux
 }

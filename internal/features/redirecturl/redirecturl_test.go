@@ -1,33 +1,28 @@
-package minifyurl_test
+package redirecturl_test
 
 import (
 	"testing"
-	"url-at-minimal-api/internal/features/minifyurl"
+	"url-at-minimal-api/internal/features/redirecturl"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMinify(t *testing.T) {
+func TestURL(t *testing.T) {
 	// Given
 	mockRepo := &MockRepository{
-		SaveFn: func(url, hash string) {
-			assert.Equal(t, "https://www.google.com", url)
+		FindFn: func(hash string) string {
+			assert.Equal(t, "Casd1cV", hash)
+			return "https://www.google.com"
 		},
 	}
-	mockRandom := &MockRandomizer{
-		RandomStringFn: func(length int) string {
-			assert.Equal(t, 7, length)
-			return "AsdvRe0"
-		},
-	}
-	minifer := minifyurl.New(mockRepo, mockRandom)
+	redirect := redirecturl.New(mockRepo)
 
 	// When
-	minifiedUrl := minifer.Minify("https://www.google.com", 7)
+	url := redirect.URL("Casd1cV")
 
 	// Then
-	assert.Equal(t, "AsdvRe0", minifiedUrl)
-	assert.Equal(t, 1, mockRepo.SaveFnCount)
+	assert.Equal(t, "https://www.google.com", url)
+	assert.Equal(t, 1, mockRepo.FindFnCount)
 }
 
 type MockRandomizer struct {
