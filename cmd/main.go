@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"url-at-minimal-api/internal/adapters/clock"
 	"url-at-minimal-api/internal/adapters/handlers/minify"
 	"url-at-minimal-api/internal/adapters/handlers/redirect"
@@ -21,5 +23,13 @@ func main() {
 	)
 
 	println("I'm up!")
-	log.Fatal(http.ListenAndServe(":8080", router.Handler()))
+	log.Fatal(http.ListenAndServe(getPort(), router.Handler()))
+}
+
+func getPort() string {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	return fmt.Sprintf(":%s", port)
 }
