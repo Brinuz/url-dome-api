@@ -14,7 +14,7 @@ func TestHealthCheck(t *testing.T) {
 	// Given
 	mockMinifier := &MockMinify{}
 	mockRedirecter := &MockRedirect{}
-	router := router.New(mockMinifier, mockRedirecter)
+	router := router.New(mockMinifier, mockRedirecter, []router.Middleware{})
 	ms := httptest.NewServer(router.Handler())
 	defer ms.Close()
 
@@ -26,13 +26,38 @@ func TestHealthCheck(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 }
 
+func TestMiddlewares(t *testing.T) {
+	// Given
+	middlewareCalled := 0
+	dummyMiddleware := func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			middlewareCalled++
+			next.ServeHTTP(w, r)
+		})
+	}
+	mockMinifier := &MockMinify{}
+	mockRedirecter := &MockRedirect{}
+	middlewares := []router.Middleware{dummyMiddleware, dummyMiddleware}
+	router := router.New(mockMinifier, mockRedirecter, middlewares)
+	ms := httptest.NewServer(router.Handler())
+	defer ms.Close()
+
+	// When
+	resp, err := http.Get(ms.URL + "/health-check")
+
+	// Then
+	assert.NoError(t, err)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, 2, middlewareCalled)
+}
+
 func TestMinifier(t *testing.T) {
 	// Given
 	mockMinifier := &MockMinify{
 		HandlerFn: func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusCreated) },
 	}
 	mockRedirecter := &MockRedirect{}
-	router := router.New(mockMinifier, mockRedirecter)
+	router := router.New(mockMinifier, mockRedirecter, []router.Middleware{})
 	ms := httptest.NewServer(router.Handler())
 	defer ms.Close()
 
@@ -53,7 +78,7 @@ func TestRedirecter(t *testing.T) {
 			w.WriteHeader(http.StatusOK)
 		},
 	}
-	router := router.New(mockMinifier, mockRedirecter)
+	router := router.New(mockMinifier, mockRedirecter, []router.Middleware{})
 	ms := httptest.NewServer(router.Handler())
 	defer ms.Close()
 

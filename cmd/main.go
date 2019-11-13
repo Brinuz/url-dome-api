@@ -8,6 +8,7 @@ import (
 	"url-at-minimal-api/internal/adapters/clock"
 	"url-at-minimal-api/internal/adapters/handlers/minify"
 	"url-at-minimal-api/internal/adapters/handlers/redirect"
+	"url-at-minimal-api/internal/adapters/middleware"
 	"url-at-minimal-api/internal/adapters/randomizer"
 	"url-at-minimal-api/internal/adapters/repository"
 	"url-at-minimal-api/internal/adapters/router"
@@ -20,6 +21,7 @@ func main() {
 	router := router.New(
 		minify.New(minifyurl.New(repository, randomizer.New(clock.New()))),
 		redirect.New(redirecturl.New(repository)),
+		[]router.Middleware{middleware.Security},
 	)
 
 	println("I'm up!")
