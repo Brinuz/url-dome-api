@@ -43,7 +43,7 @@ func (m Minifier) Handler(w http.ResponseWriter, r *http.Request) {
 
 	result := m.minifier.Minify(requestBody.URL, 7)
 
-	respJSON, _ := json.Marshal(struct{ URL string }{r.Host + "/" + result})
+	respJSON, _ := json.Marshal(struct{ URL string }{"/" + result})
 
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
