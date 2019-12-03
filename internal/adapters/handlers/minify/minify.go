@@ -29,8 +29,6 @@ func (m Minifier) Handler(w http.ResponseWriter, r *http.Request) {
 		URL string `json:"URL"`
 	}
 
-	println(r.Header.Get("Content-Type"))
-
 	err := json.NewDecoder(r.Body).Decode(&requestBody)
 
 	if err != nil {
@@ -40,7 +38,7 @@ func (m Minifier) Handler(w http.ResponseWriter, r *http.Request) {
 
 	result := m.minifier.Minify(requestBody.URL, 7)
 
-	respJSON, _ := json.Marshal(struct{ URL string }{"/" + result})
+	respJSON, _ := json.Marshal(struct{ URL string }{result})
 
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
