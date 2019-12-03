@@ -29,10 +29,7 @@ func (m Minifier) Handler(w http.ResponseWriter, r *http.Request) {
 		URL string `json:"URL"`
 	}
 
-	if r.Header.Get("Content-Type") != "application/json" {
-		w.WriteHeader(http.StatusNotFound)
-		return
-	}
+	println(r.Header.Get("Content-Type"))
 
 	err := json.NewDecoder(r.Body).Decode(&requestBody)
 
