@@ -10,7 +10,7 @@ import (
 	"url-at-minimal-api/internal/adapters/handlers/redirect"
 	"url-at-minimal-api/internal/adapters/middleware"
 	"url-at-minimal-api/internal/adapters/randomizer"
-	"url-at-minimal-api/internal/adapters/repository"
+	repository "url-at-minimal-api/internal/adapters/repository/memory"
 	"url-at-minimal-api/internal/adapters/router"
 	"url-at-minimal-api/internal/features/minifyurl"
 	"url-at-minimal-api/internal/features/redirecturl"

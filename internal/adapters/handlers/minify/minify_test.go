@@ -31,7 +31,7 @@ func TestHandler(t *testing.T) {
 	// Then
 	body, _ := ioutil.ReadAll(result.Body)
 	assert.Equal(t, http.StatusCreated, rec.Code)
-	assert.JSONEq(t, `{"URL":"/AsdcBV1"}`, string(body))
+	assert.JSONEq(t, `{"URL":"AsdcBV1"}`, string(body))
 	assert.Equal(t, 1, mockMinifyUrl.MinifyFnCount)
 }
 
