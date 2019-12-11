@@ -38,7 +38,7 @@ func getRedisInstance() *redis.Client {
 
 	opts, err := redis.ParseURL(rURL)
 	if err != nil {
-		log.Fatal("Failed to connect get redis instance.")
+		log.Fatal("Failed to get redis instance.")
 	}
 
 	client := redis.NewClient(opts)

@@ -11,8 +11,8 @@ func TestMemoryRepositorySaveAndFind(t *testing.T) {
 	// Given
 	repo := repository.New()
 
-	repo.Save("https://www.google.com", "Vsdfb1")
-	repo.Save("https://www.microsoft.com", "MasFgr0")
+	_ = repo.Save("https://www.google.com", "Vsdfb1")
+	_ = repo.Save("https://www.microsoft.com", "MasFgr0")
 
 	// When
 	count := repo.Count()
@@ -29,8 +29,8 @@ func TestMemoryRepositoryNonExisting(t *testing.T) {
 	// Given
 	repo := repository.New()
 
-	repo.Save("https://www.google.com", "Vsdfb1")
-	repo.Save("https://www.microsoft.com", "MasFgr0")
+	_ = repo.Save("https://www.google.com", "Vsdfb1")
+	_ = repo.Save("https://www.microsoft.com", "MasFgr0")
 
 	// When
 	count := repo.Count()

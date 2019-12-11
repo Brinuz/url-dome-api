@@ -13,8 +13,9 @@ func New() *MemoryRepository {
 }
 
 // Save saves into memory the current url and hash
-func (r *MemoryRepository) Save(url, hash string) {
+func (r *MemoryRepository) Save(url, hash string) error {
 	r.hashes[hash] = url
+	return nil
 }
 
 // Find looks in the memory the current hash and returns matching url

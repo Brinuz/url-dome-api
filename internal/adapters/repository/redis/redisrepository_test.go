@@ -3,6 +3,7 @@ package repository_test
 import (
 	"testing"
 	repository "url-at-minimal-api/internal/adapters/repository/redis"
+	"url-at-minimal-api/internal/domain/errors"
 
 	"github.com/alicebob/miniredis"
 	"github.com/go-redis/redis"
@@ -15,8 +16,8 @@ func TestRedisRepositorySaveAndFind(t *testing.T) {
 	client := redis.NewClient(&redis.Options{Addr: mr.Addr()})
 	repo := repository.New(client)
 
-	repo.Save("https://www.google.com", "Vsdfb1")
-	repo.Save("https://www.microsoft.com", "MasFgr0")
+	_ = repo.Save("https://www.google.com", "Vsdfb1")
+	_ = repo.Save("https://www.microsoft.com", "MasFgr0")
 
 	// When
 	count := repo.Count()
@@ -29,14 +30,30 @@ func TestRedisRepositorySaveAndFind(t *testing.T) {
 	assert.Equal(t, "https://www.microsoft.com", entry2)
 }
 
+func TestRedisRepositoryExistingHash(t *testing.T) {
+	// Given
+	mr, _ := miniredis.Run()
+	client := redis.NewClient(&redis.Options{Addr: mr.Addr()})
+	repo := repository.New(client)
+
+	// When
+	firstSetErr := repo.Save("https://www.google.com", "Vsdfb1")
+	secondSetErr := repo.Save("https://www.microsoft.com", "Vsdfb1")
+
+	// Then
+	assert.NoError(t, firstSetErr)
+	assert.Error(t, secondSetErr)
+	assert.Equal(t, errors.CouldNotSaveEntry, secondSetErr.Error())
+}
+
 func TestRedisRepositoryNonExisting(t *testing.T) {
 	// Given
 	mr, _ := miniredis.Run()
 	client := redis.NewClient(&redis.Options{Addr: mr.Addr()})
 	repo := repository.New(client)
 
-	repo.Save("https://www.google.com", "Vsdfb1")
-	repo.Save("https://www.microsoft.com", "MasFgr0")
+	_ = repo.Save("https://www.google.com", "Vsdfb1")
+	_ = repo.Save("https://www.microsoft.com", "MasFgr0")
 
 	// When
 	count := repo.Count()

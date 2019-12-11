@@ -36,15 +36,15 @@ func (m *MockRandomizer) RandomString(length int) string {
 }
 
 type MockRepository struct {
-	SaveFn      func(url, hash string)
+	SaveFn      func(url, hash string) error
 	SaveFnCount int
 	FindFn      func(hash string) string
 	FindFnCount int
 }
 
-func (mock *MockRepository) Save(url, hash string) {
+func (mock *MockRepository) Save(url, hash string) error {
 	mock.SaveFnCount++
-	mock.SaveFn(url, hash)
+	return mock.SaveFn(url, hash)
 }
 func (mock *MockRepository) Find(hash string) string {
 	mock.FindFnCount++
