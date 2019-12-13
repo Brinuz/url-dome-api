@@ -1,8 +1,7 @@
 package repository
 
 import (
-	"errors"
-	domainErrors "url-at-minimal-api/internal/domain/errors"
+	"url-at-minimal-api/internal/domain"
 
 	"github.com/go-redis/redis"
 )
@@ -23,14 +22,14 @@ func New(c *redis.Client) *RedisRepository {
 func (r *RedisRepository) Save(url, hash string) error {
 	success, err := r.client.SetNX(hash, url, 0).Result()
 	if !success || err != nil {
-		return errors.New(domainErrors.CouldNotSaveEntry)
+		return domain.ErrCouldNotSaveEntry
 	}
 	return nil
 }
 
 // Find looks in the memory the current hash and returns matching url
 func (r RedisRepository) Find(hash string) string {
-	return r.client.Get(hash).Val() // Yes, currently ignoring bad state
+	return r.client.Get(hash).Val()
 }
 
 // Count returns the amount of entries in memory

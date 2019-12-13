@@ -14,8 +14,9 @@ import (
 func TestHandler(t *testing.T) {
 	// Given
 	mockMinifyUrl := &MockMinifyUrl{
-		MinifyFn: func(url string, len int) string {
+		MinifyFn: func(url string, len, times int) string {
 			assert.Equal(t, 7, len)
+			assert.Equal(t, 5, times)
 			assert.Equal(t, "https://dummy.url", url)
 			return "AsdcBV1"
 		},
@@ -51,11 +52,11 @@ func TestHandlerBadJSON(t *testing.T) {
 }
 
 type MockMinifyUrl struct {
-	MinifyFn      func(url string, len int) string
+	MinifyFn      func(url string, len, times int) string
 	MinifyFnCount int
 }
 
-func (m *MockMinifyUrl) Minify(url string, len int) string {
+func (m *MockMinifyUrl) Minify(url string, len, times int) string {
 	m.MinifyFnCount++
-	return m.MinifyFn(url, len)
+	return m.MinifyFn(url, len, times)
 }

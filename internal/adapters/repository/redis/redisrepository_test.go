@@ -3,7 +3,7 @@ package repository_test
 import (
 	"testing"
 	repository "url-at-minimal-api/internal/adapters/repository/redis"
-	"url-at-minimal-api/internal/domain/errors"
+	"url-at-minimal-api/internal/domain"
 
 	"github.com/alicebob/miniredis"
 	"github.com/go-redis/redis"
@@ -42,8 +42,7 @@ func TestRedisRepositoryExistingHash(t *testing.T) {
 
 	// Then
 	assert.NoError(t, firstSetErr)
-	assert.Error(t, secondSetErr)
-	assert.Equal(t, errors.CouldNotSaveEntry, secondSetErr.Error())
+	assert.Equal(t, domain.ErrCouldNotSaveEntry, secondSetErr)
 }
 
 func TestRedisRepositoryNonExisting(t *testing.T) {

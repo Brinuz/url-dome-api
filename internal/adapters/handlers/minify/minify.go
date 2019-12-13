@@ -36,7 +36,7 @@ func (m Minifier) Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result := m.minifier.Minify(requestBody.URL, 7)
+	result := m.minifier.Minify(requestBody.URL, 7, 5)
 
 	respJSON, _ := json.Marshal(struct{ URL string }{result})
 

@@ -2,6 +2,7 @@ package minifyurl_test
 
 import (
 	"testing"
+	"url-at-minimal-api/internal/domain"
 	"url-at-minimal-api/internal/features/minifyurl"
 
 	"github.com/stretchr/testify/assert"
@@ -24,11 +25,51 @@ func TestMinify(t *testing.T) {
 	minifer := minifyurl.New(mockRepo, mockRandom)
 
 	// When
-	minifiedUrl := minifer.Minify("https://www.google.com", 7)
+	minifiedUrl := minifer.Minify("https://www.google.com", 7, 2)
 
 	// Then
 	assert.Equal(t, "AsdvRe0", minifiedUrl)
 	assert.Equal(t, 1, mockRepo.SaveFnCount)
+}
+
+func TestMinifyOnHashCollision(t *testing.T) {
+	// Given
+	collisions := 0
+
+	mockRepo := &MockRepository{
+		SaveFn: func(url, hash string) error {
+			var err error
+			switch collisions {
+			case 0:
+				err = domain.ErrCouldNotSaveEntry
+			case 1:
+				err = nil
+			}
+			collisions++
+			return err
+		},
+	}
+	mockRandom := &MockRandomizer{
+		RandomStringFn: func(length int) string {
+			var hash string
+			switch collisions {
+			case 0:
+				hash = "Bsdf52S"
+			case 1:
+				hash = "AsdvRe0"
+			}
+			return hash
+		},
+	}
+	minifer := minifyurl.New(mockRepo, mockRandom)
+
+	// When
+	minifiedUrl := minifer.Minify("https://www.google.com", 7, 2)
+
+	// Then
+	assert.Equal(t, "AsdvRe0", minifiedUrl)
+	assert.Equal(t, 2, mockRepo.SaveFnCount)
+	assert.Equal(t, 2, mockRandom.RandomStringFnCount)
 }
 
 type MockRandomizer struct {

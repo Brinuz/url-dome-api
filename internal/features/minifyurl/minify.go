@@ -3,11 +3,12 @@ package minifyurl
 import (
 	"url-at-minimal-api/internal/adapters/randomizer"
 	"url-at-minimal-api/internal/adapters/repository"
+	"url-at-minimal-api/internal/domain"
 )
 
 // MinifyURL interface
 type MinifyURL interface {
-	Minify(url string, len int) string
+	Minify(url string, len, tries int) string
 }
 
 // Minifier is a feature used to shorten the given url
@@ -25,8 +26,14 @@ func New(rep repository.Repository, rand randomizer.Randomizer) *Minifier {
 }
 
 // Minify minifies the given url to a known shorter version
-func (m Minifier) Minify(url string, len int) string {
+func (m Minifier) Minify(url string, len, tries int) string {
+	if tries < 1 {
+		return ""
+	}
 	shorten := m.randomizer.RandomString(len)
-	m.repository.Save(url, shorten)
-	return shorten
+	err := m.repository.Save(url, shorten)
+	if err != domain.ErrCouldNotSaveEntry {
+		return shorten
+	}
+	return m.Minify(url, len, tries-1)
 }
