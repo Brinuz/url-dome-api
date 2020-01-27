@@ -3,7 +3,7 @@ package randomizer
 import (
 	"math/rand"
 	"strings"
-	"url-at-minimal-api/internal/adapters/clock"
+	"url-at-minimal-api/internal/external_interfaces/clock"
 )
 
 const (

@@ -1,9 +1,9 @@
-package router
+package rest
 
 import (
 	"net/http"
-	"url-at-minimal-api/internal/adapters/handlers/minify"
-	"url-at-minimal-api/internal/adapters/handlers/redirect"
+	"url-at-minimal-api/internal/external_interfaces/handlers/minify"
+	"url-at-minimal-api/internal/external_interfaces/handlers/redirect"
 
 	"github.com/go-chi/chi"
 )
@@ -11,16 +11,16 @@ import (
 // Middleware represents a middleware handler
 type Middleware func(next http.Handler) http.Handler
 
-// Router structure
-type Router struct {
+// Rest structure
+type Rest struct {
 	minify      minify.Minify
 	redirect    redirect.Redirect
 	middlewares []Middleware
 }
 
-// New New returns a valid instace of Router
-func New(m minify.Minify, r redirect.Redirect, mw []Middleware) *Router {
-	return &Router{
+// New New returns a valid instace of Rest
+func New(m minify.Minify, r redirect.Redirect, mw []Middleware) *Rest {
+	return &Rest{
 		minify:      m,
 		redirect:    r,
 		middlewares: mw,
@@ -28,7 +28,7 @@ func New(m minify.Minify, r redirect.Redirect, mw []Middleware) *Router {
 }
 
 // Handler is the router main handler
-func (r Router) Handler() *chi.Mux {
+func (r Rest) Handler() *chi.Mux {
 	mux := chi.NewRouter()
 
 	for _, mw := range r.middlewares {

@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
-	"url-at-minimal-api/internal/adapters/handlers/minify"
+	"url-at-minimal-api/internal/external_interfaces/handlers/minify"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -14,7 +14,7 @@ import (
 func TestHandler(t *testing.T) {
 	// Given
 	mockMinifyUrl := &MockMinifyUrl{
-		MinifyFn: func(url string, len, times int) string {
+		ExecuteFn: func(url string, len, times int) string {
 			assert.Equal(t, 7, len)
 			assert.Equal(t, 5, times)
 			assert.Equal(t, "https://dummy.url", url)
@@ -33,7 +33,7 @@ func TestHandler(t *testing.T) {
 	body, _ := ioutil.ReadAll(result.Body)
 	assert.Equal(t, http.StatusCreated, rec.Code)
 	assert.JSONEq(t, `{"URL":"AsdcBV1"}`, string(body))
-	assert.Equal(t, 1, mockMinifyUrl.MinifyFnCount)
+	assert.Equal(t, 1, mockMinifyUrl.ExecuteFnCount)
 }
 
 func TestHandlerBadJSON(t *testing.T) {
@@ -48,15 +48,15 @@ func TestHandlerBadJSON(t *testing.T) {
 
 	// Then
 	assert.Equal(t, http.StatusBadRequest, rec.Code)
-	assert.Equal(t, 0, mockMinifyUrl.MinifyFnCount)
+	assert.Equal(t, 0, mockMinifyUrl.ExecuteFnCount)
 }
 
 type MockMinifyUrl struct {
-	MinifyFn      func(url string, len, times int) string
-	MinifyFnCount int
+	ExecuteFn      func(url string, len, times int) string
+	ExecuteFnCount int
 }
 
-func (m *MockMinifyUrl) Minify(url string, len, times int) string {
-	m.MinifyFnCount++
-	return m.MinifyFn(url, len, times)
+func (m *MockMinifyUrl) Execute(url string, len, times int) string {
+	m.ExecuteFnCount++
+	return m.ExecuteFn(url, len, times)
 }

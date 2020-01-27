@@ -2,7 +2,7 @@ package redirecturl_test
 
 import (
 	"testing"
-	"url-at-minimal-api/internal/features/redirecturl"
+	"url-at-minimal-api/internal/use_cases/redirecturl"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -18,7 +18,7 @@ func TestURL(t *testing.T) {
 	redirect := redirecturl.New(mockRepo)
 
 	// When
-	url := redirect.URL("Casd1cV")
+	url := redirect.Execute("Casd1cV")
 
 	// Then
 	assert.Equal(t, "https://www.google.com", url)

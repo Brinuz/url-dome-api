@@ -1,10 +1,10 @@
-package router_test
+package rest_test
 
 import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"url-at-minimal-api/internal/adapters/router"
+	"url-at-minimal-api/internal/external_interfaces/rest"
 
 	"github.com/go-chi/chi"
 	"github.com/stretchr/testify/assert"
@@ -14,8 +14,8 @@ func TestHealthCheck(t *testing.T) {
 	// Given
 	mockMinifier := &MockMinify{}
 	mockRedirecter := &MockRedirect{}
-	router := router.New(mockMinifier, mockRedirecter, []router.Middleware{})
-	ms := httptest.NewServer(router.Handler())
+	rest := rest.New(mockMinifier, mockRedirecter, []rest.Middleware{})
+	ms := httptest.NewServer(rest.Handler())
 	defer ms.Close()
 
 	// When
@@ -37,9 +37,9 @@ func TestMiddlewares(t *testing.T) {
 	}
 	mockMinifier := &MockMinify{}
 	mockRedirecter := &MockRedirect{}
-	middlewares := []router.Middleware{dummyMiddleware, dummyMiddleware}
-	router := router.New(mockMinifier, mockRedirecter, middlewares)
-	ms := httptest.NewServer(router.Handler())
+	middlewares := []rest.Middleware{dummyMiddleware, dummyMiddleware}
+	rest := rest.New(mockMinifier, mockRedirecter, middlewares)
+	ms := httptest.NewServer(rest.Handler())
 	defer ms.Close()
 
 	// When
@@ -57,8 +57,8 @@ func TestMinifier(t *testing.T) {
 		HandlerFn: func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusCreated) },
 	}
 	mockRedirecter := &MockRedirect{}
-	router := router.New(mockMinifier, mockRedirecter, []router.Middleware{})
-	ms := httptest.NewServer(router.Handler())
+	rest := rest.New(mockMinifier, mockRedirecter, []rest.Middleware{})
+	ms := httptest.NewServer(rest.Handler())
 	defer ms.Close()
 
 	// When
@@ -78,8 +78,8 @@ func TestRedirecter(t *testing.T) {
 			w.WriteHeader(http.StatusOK)
 		},
 	}
-	router := router.New(mockMinifier, mockRedirecter, []router.Middleware{})
-	ms := httptest.NewServer(router.Handler())
+	rest := rest.New(mockMinifier, mockRedirecter, []rest.Middleware{})
+	ms := httptest.NewServer(rest.Handler())
 	defer ms.Close()
 
 	// When

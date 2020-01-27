@@ -2,7 +2,7 @@ package repository_test
 
 import (
 	"testing"
-	repository "url-at-minimal-api/internal/adapters/repository/memory"
+	repository "url-at-minimal-api/internal/external_interfaces/repository/memory"
 
 	"github.com/stretchr/testify/assert"
 )

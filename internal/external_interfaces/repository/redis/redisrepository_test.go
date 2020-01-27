@@ -2,8 +2,8 @@ package repository_test
 
 import (
 	"testing"
-	repository "url-at-minimal-api/internal/adapters/repository/redis"
 	"url-at-minimal-api/internal/domain"
+	repository "url-at-minimal-api/internal/external_interfaces/repository/redis"
 
 	"github.com/alicebob/miniredis"
 	"github.com/go-redis/redis"

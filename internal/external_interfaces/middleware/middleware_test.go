@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"url-at-minimal-api/internal/adapters/middleware"
+	"url-at-minimal-api/internal/external_interfaces/middleware"
 
 	"github.com/stretchr/testify/assert"
 )

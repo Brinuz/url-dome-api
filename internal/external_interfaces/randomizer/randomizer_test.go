@@ -2,7 +2,7 @@ package randomizer_test
 
 import (
 	"testing"
-	"url-at-minimal-api/internal/adapters/randomizer"
+	"url-at-minimal-api/internal/external_interfaces/randomizer"
 
 	"github.com/stretchr/testify/assert"
 )

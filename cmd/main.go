@@ -5,29 +5,29 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"url-at-minimal-api/internal/adapters/clock"
-	"url-at-minimal-api/internal/adapters/handlers/minify"
-	"url-at-minimal-api/internal/adapters/handlers/redirect"
-	"url-at-minimal-api/internal/adapters/middleware"
-	"url-at-minimal-api/internal/adapters/randomizer"
-	repository "url-at-minimal-api/internal/adapters/repository/redis"
-	"url-at-minimal-api/internal/adapters/router"
-	"url-at-minimal-api/internal/features/minifyurl"
-	"url-at-minimal-api/internal/features/redirecturl"
+	"url-at-minimal-api/internal/external_interfaces/clock"
+	"url-at-minimal-api/internal/external_interfaces/handlers/minify"
+	"url-at-minimal-api/internal/external_interfaces/handlers/redirect"
+	"url-at-minimal-api/internal/external_interfaces/middleware"
+	"url-at-minimal-api/internal/external_interfaces/randomizer"
+	repository "url-at-minimal-api/internal/external_interfaces/repository/redis"
+	"url-at-minimal-api/internal/external_interfaces/rest"
+	"url-at-minimal-api/internal/use_cases/minifyurl"
+	"url-at-minimal-api/internal/use_cases/redirecturl"
 
 	"github.com/go-redis/redis"
 )
 
 func main() {
 	repository := repository.New(getRedisInstance())
-	router := router.New(
+	rest := rest.New(
 		minify.New(minifyurl.New(repository, randomizer.New(clock.New()))),
 		redirect.New(redirecturl.New(repository)),
-		[]router.Middleware{middleware.Security},
+		[]rest.Middleware{middleware.Security},
 	)
 
 	println("I'm up!")
-	log.Fatal(http.ListenAndServe(getPort(), router.Handler()))
+	log.Fatal(http.ListenAndServe(getPort(), rest.Handler()))
 }
 
 func getRedisInstance() *redis.Client {

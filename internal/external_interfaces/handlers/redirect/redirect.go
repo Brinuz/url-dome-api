@@ -2,7 +2,7 @@ package redirect
 
 import (
 	"net/http"
-	"url-at-minimal-api/internal/features/redirecturl"
+	"url-at-minimal-api/internal/use_cases/redirecturl"
 
 	"github.com/go-chi/chi"
 )
@@ -26,6 +26,6 @@ func New(r redirecturl.RedirectURL) *Redirecter {
 
 // Handler retuns an handler to be used by routing
 func (m Redirecter) Handler(w http.ResponseWriter, r *http.Request) {
-	url := m.redirecter.URL(chi.URLParam(r, "target"))
+	url := m.redirecter.Execute(chi.URLParam(r, "target"))
 	http.Redirect(w, r, url, http.StatusMovedPermanently)
 }

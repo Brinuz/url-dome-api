@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"url-at-minimal-api/internal/adapters/handlers/redirect"
+	"url-at-minimal-api/internal/external_interfaces/handlers/redirect"
 
 	"github.com/go-chi/chi"
 	"github.com/stretchr/testify/assert"
@@ -14,7 +14,7 @@ import (
 func TestHandler(t *testing.T) {
 	// Given
 	mockRedictUrl := &MockRedictUrl{
-		URLFn: func(hash string) string {
+		ExecuteFn: func(hash string) string {
 			assert.Equal(t, "AsdcBV1", hash)
 			return "https://dummy.url"
 		},
@@ -33,15 +33,15 @@ func TestHandler(t *testing.T) {
 	assert.Equal(t, http.StatusMovedPermanently, rec.Code)
 	assert.Equal(t, "https://dummy.url", rec.HeaderMap.Get("Location"))
 
-	assert.Equal(t, 1, mockRedictUrl.URLFnCount)
+	assert.Equal(t, 1, mockRedictUrl.ExecuteFnCount)
 }
 
 type MockRedictUrl struct {
-	URLFn      func(hash string) string
-	URLFnCount int
+	ExecuteFn      func(hash string) string
+	ExecuteFnCount int
 }
 
-func (m *MockRedictUrl) URL(hash string) string {
-	m.URLFnCount++
-	return m.URLFn(hash)
+func (m *MockRedictUrl) Execute(hash string) string {
+	m.ExecuteFnCount++
+	return m.ExecuteFn(hash)
 }

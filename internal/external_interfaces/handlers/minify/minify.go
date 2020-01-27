@@ -3,7 +3,7 @@ package minify
 import (
 	"encoding/json"
 	"net/http"
-	"url-at-minimal-api/internal/features/minifyurl"
+	"url-at-minimal-api/internal/use_cases/minifyurl"
 )
 
 // Minify interface
@@ -36,7 +36,7 @@ func (m Minifier) Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result := m.minifier.Minify(requestBody.URL, 7, 5)
+	result := m.minifier.Execute(requestBody.URL, 7, 5)
 
 	respJSON, _ := json.Marshal(struct{ URL string }{result})
 

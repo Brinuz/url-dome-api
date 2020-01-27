@@ -3,7 +3,7 @@ package minifyurl_test
 import (
 	"testing"
 	"url-at-minimal-api/internal/domain"
-	"url-at-minimal-api/internal/features/minifyurl"
+	"url-at-minimal-api/internal/use_cases/minifyurl"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -25,7 +25,7 @@ func TestMinify(t *testing.T) {
 	minifer := minifyurl.New(mockRepo, mockRandom)
 
 	// When
-	minifiedUrl := minifer.Minify("https://www.google.com", 7, 2)
+	minifiedUrl := minifer.Execute("https://www.google.com", 7, 2)
 
 	// Then
 	assert.Equal(t, "AsdvRe0", minifiedUrl)
@@ -64,7 +64,7 @@ func TestMinifyOnHashCollision(t *testing.T) {
 	minifer := minifyurl.New(mockRepo, mockRandom)
 
 	// When
-	minifiedUrl := minifer.Minify("https://www.google.com", 7, 2)
+	minifiedUrl := minifer.Execute("https://www.google.com", 7, 2)
 
 	// Then
 	assert.Equal(t, "AsdvRe0", minifiedUrl)

@@ -1,12 +1,12 @@
 package redirecturl
 
 import (
-	"url-at-minimal-api/internal/adapters/repository"
+	"url-at-minimal-api/internal/external_interfaces/repository"
 )
 
 // RedirectURL interface
 type RedirectURL interface {
-	URL(hash string) string
+	Execute(hash string) string
 }
 
 // Redirecter is a feature to redirect to the hash's url
@@ -21,7 +21,7 @@ func New(rep repository.Repository) *Redirecter {
 	}
 }
 
-// URL returns the original minified url based on the hash
-func (m Redirecter) URL(hash string) string {
+// Execute returns the original minified url based on the hash
+func (m Redirecter) Execute(hash string) string {
 	return m.repository.Find(hash)
 }
