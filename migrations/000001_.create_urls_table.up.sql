@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS urls(
+    id serial PRIMARY KEY,
+    hash VARCHAR (10) UNIQUE NOT NULL,
+    url VARCHAR NOT NULL
+);

@@ -1,4 +1,4 @@
-module url-at-minimal-api
+module url-dome-api
 
 go 1.12
 
@@ -8,6 +8,7 @@ require (
 	github.com/alicebob/miniredis v2.5.0+incompatible
 	github.com/go-chi/chi v4.1.1+incompatible
 	github.com/go-redis/redis v6.15.7+incompatible
+	github.com/golang-migrate/migrate/v4 v4.11.0
 	github.com/gomodule/redigo v2.0.0+incompatible // indirect
 	github.com/lib/pq v1.5.2 // indirect
 	github.com/onsi/ginkgo v1.12.0 // indirect

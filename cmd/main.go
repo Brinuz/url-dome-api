@@ -15,10 +15,17 @@ import (
 	"url-at-minimal-api/internal/external_interfaces/rest"
 	"url-at-minimal-api/internal/use_cases/minifyurl"
 	"url-at-minimal-api/internal/use_cases/redirecturl"
+
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 func main() {
-	repository := repository.New(getPostgresInstance())
+	postgresDb := getPostgresInstance()
+	repository := repository.New(postgresDb)
+	migrateIfNeeded(postgresDb)
+
 	rest := rest.New(
 		minify.New(minifyurl.New(repository, randomizer.New(clock.New()))),
 		redirect.New(redirecturl.New(repository)),
@@ -57,6 +64,23 @@ func getEnvDefault(key, defaulValue string) string {
 		return defaulValue
 	}
 	return value
+}
+
+func migrateIfNeeded(db *sql.DB) {
+	println("Running migrations...")
+	driver, err := postgres.WithInstance(db, &postgres.Config{})
+	if err != nil {
+		log.Fatal(err)
+	}
+	m, err := migrate.NewWithDatabaseInstance(getEnvDefault("POSTGRES_MIGRATIONS_DIR", "file://./migrations"), "postgres", driver)
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = m.Up()
+	if err != nil {
+		log.Printf("Migrations result: %s", err.Error())
+	}
+	println("Running migrations is done...")
 }
 
 func getPort() string {
