@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
@@ -10,16 +11,14 @@ import (
 	"url-at-minimal-api/internal/external_interfaces/handlers/redirect"
 	"url-at-minimal-api/internal/external_interfaces/middleware"
 	"url-at-minimal-api/internal/external_interfaces/randomizer"
-	repository "url-at-minimal-api/internal/external_interfaces/repository/redis"
+	repository "url-at-minimal-api/internal/external_interfaces/repository/postgres"
 	"url-at-minimal-api/internal/external_interfaces/rest"
 	"url-at-minimal-api/internal/use_cases/minifyurl"
 	"url-at-minimal-api/internal/use_cases/redirecturl"
-
-	"github.com/go-redis/redis"
 )
 
 func main() {
-	repository := repository.New(getRedisInstance())
+	repository := repository.New(getPostgresInstance())
 	rest := rest.New(
 		minify.New(minifyurl.New(repository, randomizer.New(clock.New()))),
 		redirect.New(redirecturl.New(repository)),
@@ -30,29 +29,36 @@ func main() {
 	log.Fatal(http.ListenAndServe(getPort(), rest.Handler()))
 }
 
-func getRedisInstance() *redis.Client {
-	rURL := os.Getenv("REDIS_URL")
-	if rURL == "" {
-		rURL = "redis://localhost:6379"
-	}
+func getPostgresInstance() *sql.DB {
+	host := getEnvDefault("POSTGRES_HOST", "localhost")
+	port := getEnvDefault("POSTGRES_PORT", "2345")
+	user := getEnvDefault("POSTGRES_USER", "postgres")
+	password := getEnvDefault("POSTGRES_PASSWORD", "secretpassword")
+	dbname := getEnvDefault("POSTGRES_DB", "url-dome")
 
-	opts, err := redis.ParseURL(rURL)
+	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+
+	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
-		log.Fatal("Failed to get redis instance.")
+		log.Fatal("Failed to get postgres instance.")
 	}
 
-	client := redis.NewClient(opts)
-	pong, err := client.Ping().Result()
-	if err != nil || pong != "PONG" {
-		log.Fatal("Failed to connect to redis instance.")
+	err = db.Ping()
+	if err != nil {
+		log.Fatal("Failed to connect to postgres instance.")
 	}
-	return client
+
+	return db
+}
+
+func getEnvDefault(key, defaulValue string) string {
+	value, hasValue := os.LookupEnv(key)
+	if !hasValue {
+		return defaulValue
+	}
+	return value
 }
 
 func getPort() string {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
-	return fmt.Sprintf(":%s", port)
+	return fmt.Sprintf(":%s", getEnvDefault("PORT", "8080"))
 }
