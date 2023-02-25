@@ -15,5 +15,5 @@ require (
 	github.com/onsi/gomega v1.10.0 // indirect
 	github.com/stretchr/testify v1.5.1
 	github.com/yuin/gopher-lua v0.0.0-20191220021717-ab39c6098bdb // indirect
-	golang.org/x/sys v0.0.0-20200509044756-6aff5f38e54f // indirect
+	golang.org/x/sys v0.1.0 // indirect
 )
